@@ -4,11 +4,11 @@ The prompt for this code sample is in PROMPT.md.
 
 ## Installation
 
-This was written on Python 3.10.1.
+This was written on Python 3.10.1, though it has been tested as far back as 3.8.12.
 
-(todo: test on earlier versions of Python)
+You shouldn't need to install anything else to run this.
 
-Everything is in the standard library, but if you want to run static type analysis or linting you'll need `mypy` and `black` respectively. These are included in the `requirements-dev.txt` for your convenience - you'll probably want to install those into a virtual environment, too.
+If you want to run static type analysis or linting you'll need `mypy` and `black` respectively. These are included in the `requirements-dev.txt` for your convenience - you'll probably want to install those into a virtual environment, too.
 
 ```bash
 $ # Optional, but helps you not mess up your Python environment
