@@ -3,11 +3,12 @@
 format.
 """
 
-from argparse import ArgumentParser
 import csv
+import os
 import sys
+from argparse import ArgumentParser
 from collections import defaultdict
-from typing import Dict, Iterable, List, NamedTuple, Optional, Tuple
+from typing import Dict, Iterable, List, NamedTuple, Optional, Set, Tuple
 
 
 class Plan(NamedTuple):
@@ -50,22 +51,22 @@ def get_silver_plans(plans: Iterable[str]) -> Iterable[Plan]:
     )
 
 
-def _only_if_unique(xs):
+def _only_if_unique(xs: Set):
     if len(xs) == 1:
-        return xs[0]
+        return xs.pop()
     return None
 
 
 def rate_areas_for_zips(
     all_zips: Iterable[str],
 ) -> Dict[str, Optional[Tuple[str, int]]]:
-    all_areas_for_zips = defaultdict(list)
+    all_areas_for_zips = defaultdict(set)
     """Determine the unique rate area in a ZIP code.
 
     If there are none, or multiple, return None.
     """
     for r in csv.DictReader(all_zips):
-        all_areas_for_zips[r["zipcode"]].append((r["state"], int(r["rate_area"])))
+        all_areas_for_zips[r["zipcode"]].add((r["state"], int(r["rate_area"])))
 
     return {
         zipcode: _only_if_unique(areas) for zipcode, areas in all_areas_for_zips.items()
@@ -111,7 +112,9 @@ def main(slcsp, plans, zips):
     with open(zips) as f:
         all_zips = f.readlines()
 
-    writer = csv.DictWriter(sys.stdout, fieldnames=["zipcode", "rate"])
+    writer = csv.DictWriter(
+        sys.stdout, fieldnames=["zipcode", "rate"], lineterminator=os.linesep
+    )
     writer.writeheader()
     for r in slcsps(zips_of_interest, all_plans, all_zips):
         writer.writerow(r)

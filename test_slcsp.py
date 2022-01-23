@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from slcsp import slcsps, Plan, rates_for_areas
+from slcsp import rate_areas_for_zips, slcsps, Plan, rates_for_areas
 
 
 class TestSlcsp(TestCase):
@@ -18,6 +18,30 @@ class TestSlcsp(TestCase):
             ("CA", 1): None,
         }
         calculated = rates_for_areas(plans)
+        self.assertEqual(calculated, expected)
+
+    def test_rate_areas_for_zips(self):
+        all_zips = [
+            "zipcode,state,county_code,name,rate_area",
+            "00001,AZ,01001,Alameda,1",
+            "00001,UT,01001,Santa Clara,1",
+            "00002,AZ,01001,Alameda,2",
+            "00002,AZ,01002,Marin,2",
+            "00002,AZ,01003,Hayward,2",
+            "00003,AZ,01001,San Mateo,3",
+            "00004,AZ,01001,Santa Cruz,4",
+            "00004,AZ,01001,Santa Cruz,5",
+            "00005,AZ,01001,Santa Cruz,5",
+        ]
+
+        calculated = rate_areas_for_zips(all_zips)
+        expected = {
+            "00001": None,
+            "00002": ("AZ", 2),
+            "00003": ("AZ", 3),
+            "00004": None,
+            "00005": ("AZ", 5),
+        }
         self.assertEqual(calculated, expected)
 
     def test_slcsps(self):
@@ -76,7 +100,7 @@ class TestSlcsp(TestCase):
         ]
 
         calculated = slcsps(
-            zips_of_interest=zips_of_interest, plans=plans, all_zips=all_zips
+            zips_of_interest=zips_of_interest, all_plans=plans, all_zips=all_zips
         )
 
         self.assertEqual(calculated, expected)
